@@ -1,0 +1,3 @@
+port = 8080
+log_level = "debug"
+ema-client-url = "http://localhost:8081/"
