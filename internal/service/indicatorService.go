@@ -6,6 +6,7 @@ import (
 )
 
 type IndicatorService interface {
+	Calculate(value, prev, prevD, prevU float64, period int) (float64, float64, float64, error)
 }
 
 type indicatorServiceImpl struct {
@@ -18,9 +19,9 @@ func NewIndicatorService(emaClient feign.EmaFeignClient) IndicatorService {
 	}
 }
 
-func (i *indicatorServiceImpl) Calculate(value, prev, prevD, prevU float64, period int) (float64, error) {
+func (i *indicatorServiceImpl) Calculate(value, prev, prevD, prevU float64, period int) (float64, float64, float64, error) {
 	if prev == 0.0 {
-		return 0, nil
+		return 0, 0, 0, nil
 	}
 
 	U := i.pointForMa(value, prev)
@@ -28,20 +29,20 @@ func (i *indicatorServiceImpl) Calculate(value, prev, prevD, prevU float64, peri
 
 	maOfU, err := i.emaClient.Calculate(prevU, U, period)
 	if err != nil {
-		return 0, err
+		return 0, 0, 0, err
 	}
 	maOfD, err := i.emaClient.Calculate(prevD, D, period)
 	if err != nil {
-		return 0, nil
+		return 0, 0, 0, nil
 	}
 	if maOfD == 0 {
-		return 100, nil
+		return 100, U, D, nil
 	}
 
 	rs := maOfU / maOfD
 	ratio := float64(100) / (1 + rs)
 
-	return 100 - ratio, nil
+	return 100 - ratio, U, D, nil
 }
 
 func (i *indicatorServiceImpl) pointForMa(value, prev float64) float64 {

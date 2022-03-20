@@ -9,16 +9,16 @@ import (
 )
 
 type server struct {
-	router              *mux.Router
-	logger              *logrus.Logger
-	indicatorController *controller.IndicatorController
+	router     *mux.Router
+	logger     *logrus.Logger
+	controller *controller.IndicatorController
 }
 
 func NewServer(indicatorController *controller.IndicatorController) *server {
 	s := &server{
-		router:              mux.NewRouter(),
-		logger:              logrus.New(),
-		indicatorController: indicatorController,
+		router:     mux.NewRouter(),
+		logger:     logrus.New(),
+		controller: indicatorController,
 	}
 
 	s.configureRouter()
@@ -33,7 +33,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-
+	s.router.Path("/calculate").
+		Handler(s.controller.HandleCalculate()).
+		Methods(http.MethodPost)
 }
 
 func (s *server) BindingAddressFromPort(port int) string {
