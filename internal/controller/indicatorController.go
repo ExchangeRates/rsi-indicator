@@ -21,15 +21,15 @@ func NewIndicatorController(service service.IndicatorService) *IndicatorControll
 func (c *IndicatorController) HandleCalculate() http.HandlerFunc {
 	type request struct {
 		Value  float64 `json:"value"`
-		Prev   float64 `json:"prev"`
-		PrevD  float64 `json:"prevD"`
-		PrevU  float64 `json:"prevU"`
+		Prev   *float64 `json:"prev"`
+		PrevD  *float64 `json:"prevD"`
+		PrevU  *float64 `json:"prevU"`
 		Period int     `json:"period"`
 	}
 	type response struct {
 		Value float64 `json:"value"`
-		D     float64 `json:"d"`
-		U     float64 `json:"u"`
+		MaOfU float64 `json:"maOfU"`
+		MaOfD float64 `json:"maOfD"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func (c *IndicatorController) HandleCalculate() http.HandlerFunc {
 			return
 		}
 
-		value, u, d, err := c.service.Calculate(
+		value, maOfU, maOfD, err := c.service.Calculate(
 			body.Value,
 			body.Prev,
 			body.PrevD,
@@ -57,8 +57,8 @@ func (c *IndicatorController) HandleCalculate() http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(response{
 			Value: value,
-			D:     d,
-			U:     u,
+			MaOfD: maOfD,
+			MaOfU: maOfU,
 		}); err != nil {
 			// TODO send response
 			logrus.Warnln("encode ", err)
