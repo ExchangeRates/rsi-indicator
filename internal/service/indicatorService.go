@@ -20,9 +20,9 @@ func NewIndicatorService(emaClient feign.EmaFeignClient) IndicatorService {
 }
 
 func (i *indicatorServiceImpl) Calculate(value float64, prev, prevD, prevU *float64, period int) (float64, float64, float64, error) {
-  if prev == nil || prevD == nil || prevU == nil {
-    return 0, 0, 0, nil 
-  }
+	if prev == nil || prevD == nil || prevU == nil {
+		return 0, 0, 0, nil
+	}
 
 	U := i.pointForMa(value, *prev)
 	D := i.pointForMa(*prev, value)

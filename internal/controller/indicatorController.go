@@ -20,11 +20,11 @@ func NewIndicatorController(service service.IndicatorService) *IndicatorControll
 
 func (c *IndicatorController) HandleCalculate() http.HandlerFunc {
 	type request struct {
-		Value  float64 `json:"value"`
+		Value  float64  `json:"value"`
 		Prev   *float64 `json:"prev"`
 		PrevD  *float64 `json:"prevD"`
 		PrevU  *float64 `json:"prevU"`
-		Period int     `json:"period"`
+		Period int      `json:"period"`
 	}
 	type response struct {
 		Value float64 `json:"value"`
